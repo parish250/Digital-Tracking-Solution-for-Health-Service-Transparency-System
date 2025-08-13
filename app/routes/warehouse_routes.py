@@ -2,14 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.schemas.warehouse import WarehouseCreate, Warehouse
-from app.database import get_db
+from app.schemas.warehouse import WarehouseCreate, Warehouse, WarehouseUpdate
+from app.db_config import get_db
 from app.models import Warehouse as WarehouseModel
 
-router = APIRouter(
-    prefix="/warehouses",
-    tags=["Warehouses"]
-)
+# No prefix here — main.py will handle it
+router = APIRouter(tags=["Warehouses"])
 
 # Create a warehouse
 @router.post("/", response_model=Warehouse)
@@ -35,11 +33,11 @@ def get_warehouse(warehouse_id: int, db: Session = Depends(get_db)):
 
 # Update a warehouse
 @router.put("/{warehouse_id}", response_model=Warehouse)
-def update_warehouse(warehouse_id: int, warehouse: WarehouseCreate, db: Session = Depends(get_db)):
+def update_warehouse(warehouse_id: int, warehouse: WarehouseUpdate, db: Session = Depends(get_db)):
     db_warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == warehouse_id).first()
     if not db_warehouse:
         raise HTTPException(status_code=404, detail="Warehouse not found")
-    for key, value in warehouse.dict().items():
+    for key, value in warehouse.dict(exclude_unset=True).items():
         setattr(db_warehouse, key, value)
     db.commit()
     db.refresh(db_warehouse)

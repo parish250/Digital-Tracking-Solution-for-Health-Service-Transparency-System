@@ -13,7 +13,9 @@ from app.schemas.shipment_schemas import (
     ScanLogCreate,
     ScanLogRead,
 )
-router = APIRouter(tags=["shipments"])
+
+# Let main.py handle tags
+router = APIRouter()
 
 # Dependency placeholder for role-based access (to implement later)
 def get_current_user():
@@ -21,8 +23,11 @@ def get_current_user():
     return {"role": "official", "user_id": 1}
 
 @router.post("/", response_model=ShipmentRead, status_code=status.HTTP_201_CREATED)
-def create_shipment(shipment: ShipmentCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
-    # Optional: check user role here
+def create_shipment(
+    shipment: ShipmentCreate,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
     db_shipment = Shipment(
         aid_item_id=shipment.aid_item_id,
         origin_id=shipment.origin_id,
@@ -36,19 +41,29 @@ def create_shipment(shipment: ShipmentCreate, db: Session = Depends(get_db), use
     return db_shipment
 
 @router.get("/", response_model=List[ShipmentRead])
-def list_shipments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    shipments = db.query(Shipment).offset(skip).limit(limit).all()
-    return shipments
+def list_shipments(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    return db.query(Shipment).offset(skip).limit(limit).all()
 
 @router.get("/{shipment_id}", response_model=ShipmentRead)
-def get_shipment(shipment_id: int, db: Session = Depends(get_db)):
+def get_shipment(
+    shipment_id: int,
+    db: Session = Depends(get_db)
+):
     shipment = db.query(Shipment).filter(Shipment.id == shipment_id).first()
     if not shipment:
         raise HTTPException(status_code=404, detail="Shipment not found")
     return shipment
 
 @router.put("/{shipment_id}", response_model=ShipmentRead)
-def update_shipment(shipment_id: int, shipment_update: ShipmentUpdate, db: Session = Depends(get_db)):
+def update_shipment(
+    shipment_id: int,
+    shipment_update: ShipmentUpdate,
+    db: Session = Depends(get_db)
+):
     shipment = db.query(Shipment).filter(Shipment.id == shipment_id).first()
     if not shipment:
         raise HTTPException(status_code=404, detail="Shipment not found")
@@ -60,7 +75,10 @@ def update_shipment(shipment_id: int, shipment_update: ShipmentUpdate, db: Sessi
     return shipment
 
 @router.delete("/{shipment_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_shipment(shipment_id: int, db: Session = Depends(get_db)):
+def delete_shipment(
+    shipment_id: int,
+    db: Session = Depends(get_db)
+):
     shipment = db.query(Shipment).filter(Shipment.id == shipment_id).first()
     if not shipment:
         raise HTTPException(status_code=404, detail="Shipment not found")
@@ -69,14 +87,17 @@ def delete_shipment(shipment_id: int, db: Session = Depends(get_db)):
     return
 
 # --- QR Code Scan Logging ---
-
 @router.post("/{shipment_id}/scan", response_model=ScanLogRead)
-def log_scan(shipment_id: int, scan_data: ScanLogCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
+def log_scan(
+    shipment_id: int,
+    scan_data: ScanLogCreate,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
     shipment = db.query(Shipment).filter(Shipment.id == shipment_id).first()
     if not shipment:
         raise HTTPException(status_code=404, detail="Shipment not found")
     
-    # Log the scan event
     scan_log = ScanLog(
         shipment_id=shipment_id,
         location=scan_data.location,

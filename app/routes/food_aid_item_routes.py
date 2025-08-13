@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.db_config import get_db
 
-router = APIRouter(prefix="/food_aid_items", tags=["Food Aid Items"])
+# Removed prefix here — main.py will add it
+router = APIRouter(tags=["Food Aid Items"])
 
 @router.post("/", response_model=schemas.FoodAidItem, status_code=status.HTTP_201_CREATED)
 def create_food_aid_item(item: schemas.FoodAidItemCreate, db: Session = Depends(get_db)):

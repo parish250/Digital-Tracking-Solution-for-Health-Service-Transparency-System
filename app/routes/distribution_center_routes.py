@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.db_config import get_db
 
-router = APIRouter(prefix="/distribution_centers", tags=["Distribution Centers"])
+# Removed prefix here — main.py already adds it
+router = APIRouter(tags=["Distribution Centers"])
 
 @router.post("/", response_model=schemas.DistributionCenter, status_code=status.HTTP_201_CREATED)
 def create_distribution_center(center: schemas.DistributionCenterCreate, db: Session = Depends(get_db)):
