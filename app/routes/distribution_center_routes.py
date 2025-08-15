@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.db_config import get_db
 from app.models.user import User
-from app.utils.auth import require_official
+from app.utils.auth import require_official, get_current_user
 
 # Removed prefix here — main.py already adds it
 router = APIRouter(tags=["Distribution Centers"])

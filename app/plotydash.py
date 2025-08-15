@@ -13,9 +13,30 @@ import json
 app = dash.Dash(__name__, external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css'])
 
 # Configuration
-API_BASE_URL = "mysql+pymysql://admin:securePass123@localhost:3306/digital_aid_db"  # Update with your API URL
+API_BASE_URL = "http://localhost:8000"  # Update with your API URL
 
-# Mock data generation (replace with actual API calls)
+# Fetch data from API
+def fetch_shipments():
+    """Fetch shipments from API"""
+    try:
+        response = requests.get(f"{API_BASE_URL}/shipments/")
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        print(f"Error fetching shipments: {e}")
+        return []
+
+def fetch_feedbacks():
+    """Fetch feedbacks from API"""
+    try:
+        response = requests.get(f"{API_BASE_URL}/feedbacks/")
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        print(f"Error fetching feedbacks: {e}")
+        return []
+
+# Generate mock data as fallback
 def generate_mock_data():
     """Generate mock data for demonstration purposes"""
     np.random.seed(42)
@@ -58,29 +79,6 @@ def generate_mock_data():
         feedbacks.append(feedback)
     
     return shipments, feedbacks
-
-# Fetch data from API (placeholder functions)
-def fetch_shipments():
-    """Fetch shipments from API - replace with actual API call"""
-    try:
-        # response = requests.get(f"{API_BASE_URL}/shipments/")
-        # return response.json()
-        shipments, _ = generate_mock_data()
-        return shipments
-    except:
-        shipments, _ = generate_mock_data()
-        return shipments
-
-def fetch_feedbacks():
-    """Fetch feedbacks from API - replace with actual API call"""
-    try:
-        # response = requests.get(f"{API_BASE_URL}/feedbacks/")
-        # return response.json()
-        _, feedbacks = generate_mock_data()
-        return feedbacks
-    except:
-        _, feedbacks = generate_mock_data()
-        return feedbacks
 
 # Calculate KPIs
 def calculate_kpis(shipments, feedbacks):

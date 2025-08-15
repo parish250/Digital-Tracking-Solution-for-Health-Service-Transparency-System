@@ -6,7 +6,7 @@ from app.schemas.warehouse import WarehouseCreate, Warehouse, WarehouseUpdate
 from app.db_config import get_db
 from app.models import Warehouse as WarehouseModel
 from app.models.user import User
-from app.utils.auth import require_official
+from app.utils.auth import require_official, get_current_user
 
 # No prefix here — main.py will handle it
 router = APIRouter(tags=["Warehouses"])
