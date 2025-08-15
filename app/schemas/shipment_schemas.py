@@ -4,8 +4,8 @@ from datetime import datetime
 
 class ShipmentBase(BaseModel):
     aid_item_id: int
-    origin_id: int
-    destination_id: int
+    origin_id: Optional[int] = None
+    destination_id: Optional[int] = None
     status: Optional[str] = "dispatched"
     timestamp: Optional[datetime]
 
@@ -21,6 +21,8 @@ class ShipmentUpdate(BaseModel):
 
 class ShipmentRead(ShipmentBase):
     id: int
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
     class Config:
         orm_mode = True
