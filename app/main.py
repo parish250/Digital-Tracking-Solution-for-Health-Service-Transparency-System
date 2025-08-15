@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.db_config import Base, engine
 from app.routes import (
     auth_routes,
@@ -11,6 +12,15 @@ from app.routes import (
 
 # Create FastAPI app
 app = FastAPI(title="Digital Tracking Solution for Health Service Transparency")
+
+# Add CORS middleware for frontend integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify exact origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create all tables at startup
 Base.metadata.create_all(bind=engine)
